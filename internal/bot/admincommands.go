@@ -2,13 +2,108 @@ package bot
 
 import (
 	"fmt"
+	util "github.com/Floor-Gang/utilpkg/botutil"
 	dg "github.com/bwmarrin/discordgo"
 	"github.com/dhghf/mcauth/internal/common"
+	"github.com/dhghf/mcauth/internal/common/db"
 	"strconv"
 )
 
-func cmdBan(msg *dg.Message, args []string) {
+// Ban a Discord user / Minecraft player
+func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
+	// args is at least 3
+	if len(args) < 3 {
+		return
+	}
 
+	// if they mentioned a player
+	// then -> args = [prefix, ban, @discord user]
+	if len(msg.Mentions) > 0 {
+		mentioned := msg.Mentions[0]
+		playerID, _ := bot.store.Links.GetPlayerID(mentioned.ID)
+
+		if len(playerID) == 0 {
+			util.Reply(
+				bot.client,
+				msg.Message,
+				fmt.Sprintf("%s isn't linked with anything", user.Mention()),
+			)
+			return
+		}
+
+		link := db.LinkedAcc{
+			DiscordID: mentioned.ID,
+			PlayerID:  playerID,
+		}
+		err := bot.store.Bans.Ban(link)
+
+		if err != nil {
+			util.Reply(
+				bot.client,
+				msg.Message,
+				fmt.Sprintf(
+					"%s (%s) is already banned",
+					user.Mention(),
+					playerID,
+				),
+			)
+		} else {
+			util.Reply(
+				bot.client,
+				msg.Message,
+				fmt.Sprintf("%s (%s) is now banned", user.Mention(), playerID),
+			)
+		}
+		return
+	}
+
+	// else -> args = [prefix, ban, mc player name]
+	playerName := args[2]
+	playerID := common.GetPlayerID(playerName)
+
+	if len(playerID) == 0 {
+		util.Reply(
+			bot.client,
+			msg.Message,
+			fmt.Sprintf("%s isn't a valid player", playerName),
+		)
+		return
+	}
+
+	userID, _ := bot.store.Links.GetDiscordID(playerID)
+
+	if len(userID) == 0 {
+		util.Reply(
+			bot.client,
+			msg.Message,
+			fmt.Sprintf("%s isn't linked with a user", playerName),
+		)
+		return
+	}
+
+	link := db.LinkedAcc{
+		DiscordID: userID,
+		PlayerID:  playerID,
+	}
+	err := bot.store.Bans.Ban(link)
+
+	if err != nil {
+		util.Reply(
+			bot.client,
+			msg.Message,
+			fmt.Sprintf(
+				"%s (%s) is already banned",
+				user.Mention(),
+				playerID,
+			),
+		)
+	} else {
+		util.Reply(
+			bot.client,
+			msg.Message,
+			fmt.Sprintf("%s (%s) is now banned", user.Mention(), playerID),
+		)
+	}
 }
 
 // See the status of the bot

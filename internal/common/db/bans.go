@@ -1,3 +1,5 @@
+// An administrator can ban a Minecraft player or Discord user which will
+// prevent them from using the bot and connection to the server.
 package db
 
 import (
@@ -9,8 +11,8 @@ type BansTable struct {
 }
 
 type Ban struct {
-	DiscordID string `gorm:"column:discord_id;type:text;unique"`
-	PlayerID  string `gorm:"column:player_id;type:text;unique"`
+	DiscordID string `gorm:"column:discord_id;type:text;unique; not null"`
+	PlayerID  string `gorm:"column:player_id;type:text;unique; not null"`
 }
 
 func (Ban) TableName() string {
@@ -23,7 +25,9 @@ func GetBansTable(gDB *gorm.DB) BansTable {
 	return BansTable{gDB: gDB}
 }
 
-func (bt *BansTable) BanLink(link LinkedAcc) error {
+// Ban a linked account, this will prevent both the Discord user and player
+// from interacting with the authenticator.
+func (bt *BansTable) Ban(link LinkedAcc) error {
 	ban := Ban{
 		DiscordID: link.DiscordID,
 		PlayerID:  link.PlayerID,
@@ -32,24 +36,8 @@ func (bt *BansTable) BanLink(link LinkedAcc) error {
 	return bt.gDB.Create(&ban).Error
 }
 
-func (bt *BansTable) BanPlayer(playerID string) error {
-	ban := Ban{
-		PlayerID: playerID,
-	}
-
-	return bt.gDB.Create(&ban).Error
-}
-
-func (bt *BansTable) BanUser(userID string) error {
-	ban := Ban{
-		DiscordID: userID,
-	}
-
-	return bt.gDB.Create(&ban).Error
-}
-
-// The identifier can be their Discord user ID or Minecraft player UUID
-func (bt *BansTable) GetBanned(identifier string) (Ban, error) {
+// The identifier can be their Discord user ID or Minecraft player UUID.
+func (bt *BansTable) GetBan(identifier string) (Ban, error) {
 	ban := Ban{}
 
 	err := bt.gDB.First(
@@ -61,6 +49,7 @@ func (bt *BansTable) GetBanned(identifier string) (Ban, error) {
 	return ban, err
 }
 
+// Unban a banned player.
 func (bt *BansTable) Pardon(banned Ban) error {
 	return bt.gDB.Where(
 		"discord_id = ? OR player_id = ?",
