@@ -106,7 +106,7 @@ func (bot *Bot) OnMessage(_ *dg.Session, msg *dg.MessageCreate) {
 		break
 	case "ban":
 		if isAdmin {
-			bot.cmdBan(msg, args)
+			bot.cmdBan(msg.Message, args)
 		} else {
 			adminAttempt = true
 		}

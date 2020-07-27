@@ -10,7 +10,7 @@ import (
 )
 
 // Ban a Discord user / Minecraft player
-func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
+func (bot *Bot) cmdBan(msg *dg.Message, args []string) {
 	// args is at least 3
 	if len(args) < 3 {
 		return
@@ -25,7 +25,7 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 		if len(playerID) == 0 {
 			util.Reply(
 				bot.client,
-				msg.Message,
+				msg,
 				fmt.Sprintf("%s isn't linked with anything", user.Mention()),
 			)
 			return
@@ -40,7 +40,7 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 		if err != nil {
 			util.Reply(
 				bot.client,
-				msg.Message,
+				msg,
 				fmt.Sprintf(
 					"%s (%s) is already banned",
 					user.Mention(),
@@ -50,7 +50,7 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 		} else {
 			util.Reply(
 				bot.client,
-				msg.Message,
+				msg,
 				fmt.Sprintf("%s (%s) is now banned", user.Mention(), playerID),
 			)
 		}
@@ -64,7 +64,7 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 	if len(playerID) == 0 {
 		util.Reply(
 			bot.client,
-			msg.Message,
+			msg,
 			fmt.Sprintf("%s isn't a valid player", playerName),
 		)
 		return
@@ -75,7 +75,7 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 	if len(userID) == 0 {
 		util.Reply(
 			bot.client,
-			msg.Message,
+			msg,
 			fmt.Sprintf("%s isn't linked with a user", playerName),
 		)
 		return
@@ -90,7 +90,7 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 	if err != nil {
 		util.Reply(
 			bot.client,
-			msg.Message,
+			msg,
 			fmt.Sprintf(
 				"<@%s> (%s/%s) is already banned",
 				userID,
@@ -101,10 +101,14 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 	} else {
 		util.Reply(
 			bot.client,
-			msg.Message,
+			msg,
 			fmt.Sprintf("<@%s> (%s) is now banned", userID, playerID),
 		)
 	}
+}
+
+func (bot *Bot) cmdPardon(msg *dg.Message) {
+
 }
 
 // See the status of the bot
