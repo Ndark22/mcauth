@@ -50,7 +50,7 @@ func (bt *BansTable) GetBan(identifier string) (*Ban, error) {
 		return nil, err
 	}
 
-	return ban, err
+	return &ban, err
 }
 
 func (bt *BansTable) PardonPlayer(playerID string) error {
