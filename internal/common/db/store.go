@@ -24,10 +24,10 @@ type Config struct {
 }
 
 type Store struct {
-	db    *sql.DB
 	gDB   *gorm.DB
 	Alts  AltsTable
 	Auth  AuthTable
+	Bans  BansTable
 	Links LinksTable
 }
 
@@ -56,18 +56,19 @@ func GetStore(config Config) (c Store) {
 	}
 
 	c = Store{
-		db:  db,
 		gDB: gDB,
 	}
 
-	c.db.SetMaxOpenConns(config.MaxConnections)
-	c.db.SetMaxIdleConns(config.MaxIdleConnections)
-	c.db.SetConnMaxLifetime(config.ConnLifespan)
+	db.SetMaxOpenConns(config.MaxConnections)
+	db.SetMaxIdleConns(config.MaxIdleConnections)
+	db.SetConnMaxLifetime(config.ConnLifespan)
 
 	// Alt account management table
 	c.Alts = GetAltsTable(gDB)
 	// Authentication code table
 	c.Auth = GetAuthTable(gDB)
+	// Ban Management
+	c.Bans = GetBansTable(gDB)
 	// Linked accounts table
 	c.Links = GetLinksTable(gDB)
 
