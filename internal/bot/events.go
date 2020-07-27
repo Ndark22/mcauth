@@ -110,6 +110,14 @@ func (bot *Bot) OnMessage(_ *dg.Session, msg *dg.MessageCreate) {
 		} else {
 			adminAttempt = true
 		}
+		break
+	case "pardon":
+		if isAdmin {
+			bot.cmdPardon(msg.Message, args)
+		} else {
+			adminAttempt = true
+		}
+		break
 	default:
 		util.Reply(bot.client, msg.Message, bot.config.Help)
 		break

@@ -11,7 +11,7 @@ import (
 
 // Ban a Discord user / Minecraft player
 func (bot *Bot) cmdBan(msg *dg.Message, args []string) {
-	// args is at least 3
+	// args is at least length of 3
 	if len(args) < 3 {
 		return
 	}
@@ -107,8 +107,50 @@ func (bot *Bot) cmdBan(msg *dg.Message, args []string) {
 	}
 }
 
-func (bot *Bot) cmdPardon(msg *dg.Message) {
+func (bot *Bot) cmdPardon(msg *dg.Message, args []string) {
+	// args is at least length of 3
+	if len(args) < 3 {
+		return
+	}
 
+	// if they mentioned a user
+	// then -> args = [prefix, pardon, <@user id>]
+	if len(msg.Mentions) > 0 {
+		mentioned := msg.Mentions[0]
+
+		if err := bot.store.Bans.Pardon(mentioned.ID); err != nil {
+			util.Reply(bot.client, msg, "Something went wrong")
+			log.Printf(
+				"Failed to pardon \"%s\", because\n%s\n",
+				mentioned.ID, err,
+			)
+		} else {
+			util.Reply(bot.client, msg, "Pardoned "+mentioned.Mention())
+		}
+	}
+
+	// else -> args = [prefix, pardon, mc player name]
+	playerName := args[2]
+	playerID := common.GetPlayerID(playerName)
+
+	if len(playerID) == 0 {
+		util.Reply(
+			bot.client,
+			msg,
+			fmt.Sprintf("%s isn't a valid player", playerName),
+		)
+		return
+	}
+
+	if err := bot.store.Bans.Pardon(playerID); err != nil {
+		util.Reply(bot.client, msg, "Something went wrong")
+		log.Printf(
+			"Failed to pardon \"%s\", because\n%s\n",
+			playerName, err,
+		)
+	} else {
+		util.Reply(bot.client, msg, "Pardoned "+playerName)
+	}
 }
 
 // See the status of the bot
