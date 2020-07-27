@@ -92,8 +92,9 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 			bot.client,
 			msg.Message,
 			fmt.Sprintf(
-				"%s (%s) is already banned",
-				user.Mention(),
+				"<@%s> (%s/%s) is already banned",
+				userID,
+				playerName,
 				playerID,
 			),
 		)
@@ -101,7 +102,7 @@ func (bot *Bot) cmdBan(msg *dg.MessageCreate, args []string) {
 		util.Reply(
 			bot.client,
 			msg.Message,
-			fmt.Sprintf("%s (%s) is now banned", user.Mention(), playerID),
+			fmt.Sprintf("<@%s> (%s) is now banned", userID, playerID),
 		)
 	}
 }
