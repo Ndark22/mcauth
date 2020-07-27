@@ -37,7 +37,7 @@ func (bt *BansTable) Ban(link LinkedAcc) error {
 }
 
 // The identifier can be their Discord user ID or Minecraft player UUID.
-func (bt *BansTable) GetBan(identifier string) (Ban, error) {
+func (bt *BansTable) GetBan(identifier string) (*Ban, error) {
 	ban := Ban{}
 
 	err := bt.gDB.First(
@@ -45,6 +45,10 @@ func (bt *BansTable) GetBan(identifier string) (Ban, error) {
 		"discord_id=? OR player_id=?",
 		identifier, identifier,
 	).Error
+
+	if len(ban.DiscordID) == 0 && len(ban.PlayerID) == 0 {
+		return nil, err
+	}
 
 	return ban, err
 }

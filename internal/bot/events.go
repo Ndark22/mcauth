@@ -52,13 +52,26 @@ func (bot *Bot) OnMessage(_ *dg.Session, msg *dg.MessageCreate) {
 
 	// args = [<prefix>, <sub-command>]
 	args := strings.Fields(msg.Content)
-	isAdmin := bot.IsAdmin(msg.Member)
-	// whether they attempted to run an administrator related command
-	adminAttempt := false
 
 	if len(args) < 2 {
 		return
 	}
+
+	ban, _ := bot.store.Bans.GetBan(msg.Author.ID)
+
+	if ban != nil {
+		util.Reply(
+			bot.client,
+			msg.Message,
+			"You're banned from using this bot.",
+		)
+		return
+	}
+
+	// for running admin commands
+	isAdmin := bot.IsAdmin(msg.Member)
+	// whether they attempted to run an administrator related command
+	adminAttempt := false
 
 	switch args[1] {
 	/* User Commands */

@@ -28,8 +28,8 @@ const (
 	NoLink         = "no_link"
 	NotWhitelisted = "no_role"
 	Maintenance    = "maintenance"
-	//PlayerIsBanned = "banned"
-	AuthCode = "auth_code"
+	PlayerIsBanned = "banned"
+	AuthCode       = "auth_code"
 )
 
 // this says that the provided player is valid and ready to join the Minecraft server.

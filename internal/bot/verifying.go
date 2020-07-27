@@ -45,6 +45,13 @@ func (bot *Bot) VerifyDiscordUser(userID string) (bool, string) {
 	// check whether they have an administrator roles. they pass any exceptions.
 	isWhitelisted, hasAdmin := bot.CheckRoles(*roles)
 
+	// check if they're banned
+	ban, _ := bot.store.Bans.GetBan(userID)
+
+	if ban != nil {
+		return false, c.PlayerIsBanned
+	}
+
 	// if they're an admin then they pass all exceptions
 	if hasAdmin {
 		return true, "Administrator"
