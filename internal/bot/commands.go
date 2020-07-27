@@ -6,7 +6,6 @@ import (
 	dg "github.com/bwmarrin/discordgo"
 	"github.com/dhghf/mcauth/internal/common"
 	"log"
-	"strconv"
 )
 
 const commands = `**Commands**

@@ -6,6 +6,7 @@ import (
 	dg "github.com/bwmarrin/discordgo"
 	"github.com/dhghf/mcauth/internal/common"
 	"github.com/dhghf/mcauth/internal/common/db"
+	"log"
 	"strconv"
 )
 
@@ -26,7 +27,10 @@ func (bot *Bot) cmdBan(msg *dg.Message, args []string) {
 			util.Reply(
 				bot.client,
 				msg,
-				fmt.Sprintf("%s isn't linked with anything", user.Mention()),
+				fmt.Sprintf(
+					"%s isn't linked with anything",
+					mentioned.Mention(),
+				),
 			)
 			return
 		}
@@ -43,7 +47,7 @@ func (bot *Bot) cmdBan(msg *dg.Message, args []string) {
 				msg,
 				fmt.Sprintf(
 					"%s (%s) is already banned",
-					user.Mention(),
+					mentioned.Mention(),
 					playerID,
 				),
 			)
@@ -51,7 +55,11 @@ func (bot *Bot) cmdBan(msg *dg.Message, args []string) {
 			util.Reply(
 				bot.client,
 				msg,
-				fmt.Sprintf("%s (%s) is now banned", user.Mention(), playerID),
+				fmt.Sprintf(
+					"%s (%s) is now banned",
+					mentioned.Mention(),
+					playerID,
+				),
 			)
 		}
 		return
@@ -118,7 +126,7 @@ func (bot *Bot) cmdPardon(msg *dg.Message, args []string) {
 	if len(msg.Mentions) > 0 {
 		mentioned := msg.Mentions[0]
 
-		if err := bot.store.Bans.Pardon(mentioned.ID); err != nil {
+		if err := bot.store.Bans.PardonUser(mentioned.ID); err != nil {
 			util.Reply(bot.client, msg, "Something went wrong")
 			log.Printf(
 				"Failed to pardon \"%s\", because\n%s\n",
@@ -142,7 +150,7 @@ func (bot *Bot) cmdPardon(msg *dg.Message, args []string) {
 		return
 	}
 
-	if err := bot.store.Bans.Pardon(playerID); err != nil {
+	if err := bot.store.Bans.PardonPlayer(playerID); err != nil {
 		util.Reply(bot.client, msg, "Something went wrong")
 		log.Printf(
 			"Failed to pardon \"%s\", because\n%s\n",

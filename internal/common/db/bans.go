@@ -49,11 +49,16 @@ func (bt *BansTable) GetBan(identifier string) (Ban, error) {
 	return ban, err
 }
 
-// Unban a banned player.
-func (bt *BansTable) Pardon(banned Ban) error {
+func (bt *BansTable) PardonPlayer(playerID string) error {
 	return bt.gDB.Where(
-		"discord_id = ? OR player_id = ?",
-		banned.DiscordID,
-		banned.PlayerID,
-	).Delete(&banned).Error
+		"player_id = ?",
+		playerID,
+	).Delete(&Ban{}).Error
+}
+
+func (bt *BansTable) PardonUser(userID string) error {
+	return bt.gDB.Where(
+		"discord_id = ?",
+		userID,
+	).Delete(&Ban{}).Error
 }
